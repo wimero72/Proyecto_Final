@@ -29,7 +29,7 @@ class HeadhunterDashboardView(HeadhunterRequiredMixin, ListView):
     de las ofertas que ha creado.
     """
     model = Candidatura
-    template_name = 'headhunter_dashboard.html'
+    template_name = 'jobs/headhunter_dashboard.html'
     context_object_name = 'candidaturas'
 
     def get_queryset(self):
@@ -47,7 +47,7 @@ class CreateOfferView(HeadhunterRequiredMixin, CreateView):
     """
     model = JobOffer
     form_class = JobOfferForm
-    template_name = 'create_offer.html'
+    template_name = 'jobs/create_offer.html'
     success_url = reverse_lazy('headhunter_dashboard')
 
     def form_valid(self, form):
@@ -66,7 +66,7 @@ class EditOfferView(HeadhunterRequiredMixin, UpdateView):
     """
     model = JobOffer
     form_class = JobOfferForm
-    template_name = 'edit_offer.html'
+    template_name = 'jobs/edit_offer.html'
     pk_url_kwarg = 'offer_id' 
     
     def get_queryset(self):
@@ -93,8 +93,8 @@ class JobOfferList(ListView):
     Muestra una lista de todas las ofertas de empleo activas.
     Accesible para todos los usuarios.
     """
+    template_name = 'jobs/job_offer_list.html'
     model = JobOffer
-    template_name = 'job_offer_list.html'
     context_object_name = 'offers'
     queryset = JobOffer.objects.filter(is_active=True).order_by('-created_at')
 
@@ -110,7 +110,7 @@ class JobOfferDetailView(DetailView):
     Accesible para todos los usuarios, con contenido condicional.
     """
     model = JobOffer
-    template_name = 'job_offer_detail.html'
+    template_name = 'jobs/job_offer_detail.html'
     context_object_name = 'offer'
     pk_url_kwarg = 'offer_id'
 
@@ -170,7 +170,7 @@ class OfferApplicationsView(HeadhunterRequiredMixin, DetailView): # Usamos el Mi
     Muestra las postulaciones para una oferta específica de un headhunter.
     """
     model = JobOffer
-    template_name = 'offer_applications.html'
+    template_name = 'jobs/offer_applications.html'
     context_object_name = 'offer'
     pk_url_kwarg = 'offer_id'
 
@@ -205,7 +205,7 @@ def cambiar_estado_candidatura(request, candidature_id):
         'form': form,
         'is_headhunter': True,
     }
-    return render(request, 'cambiar_estado_candidatura.html', context)
+    return render(request, 'jobs/cambiar_estado_candidatura.html', context)
 
 # --- Vistas de Agenda (Solo para Headhunters) ---
 
@@ -220,7 +220,7 @@ def agenda(request):
         'form': form,
         'is_headhunter': True,
     }
-    return render(request, 'agenda.html', context)
+    return render(request, 'jobs/agenda.html', context)
 
 @headhunter_required
 @require_GET
