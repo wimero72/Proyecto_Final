@@ -1,0 +1,46 @@
+# Headhunter Dashboard Template
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+{% block content %}
+
+<h2>Panel de Candidaturas</h2>
+<table border="1">
+<thead>
+<tr>
+<th>Oferta</th>
+<th>Empresa</th>
+<th>Candidato</th>
+<th>Estado actual</th>
+<th>Última actualización</th>
+<th>Actualizar estado</th>
+</tr>
+</thead>
+<tbody>
+{% for c in candidaturas %}
+<tr>
+<td>{{ c.offer.title }}</td>
+<td>{{ c.offer.company_name }}</td>
+<td>{{ c.user.username }}</td>
+<td>{{ c.get_estado_display }}</td>
+<td>{{ c.updated_at }}</td>
+<td>
+<form method="post" style="display:inline;">
+{% csrf_token %}
+
+<input type="hidden" name="candidature_id" value="{{ c.id}}">
+
+<button type="submit">Actualizar</button>
+</form>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+
+<a href="{% url 'create_offer' %}" class="btn btn-primary">Crear Nueva Oferta</a>
+
+{% endblock %}

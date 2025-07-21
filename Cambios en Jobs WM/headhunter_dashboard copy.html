@@ -1,0 +1,104 @@
+{% extends 'base.html' %} {# Asegúrate de que 'base.html' está configurado para Bootstrap #}
+{% load static %}
+
+{% block title %}Panel de Control del Headhunter{% endblock %}
+
+{% block extra_head %}
+    {# Opcional: CSS adicional si lo necesitas para elementos específicos del dashboard #}
+    <style>
+        .card-header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .table-responsive {
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary">📊 Panel de Candidaturas</h2>
+
+    {# Mensajes de Django #}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header card-header-actions bg-light py-3">
+            <h5 class="mb-0 text-dark">Mis Ofertas y Candidaturas</h5>
+            <a href="{% url 'create_offer' %}" class="btn btn-success btn-sm">
+                <i class="fas fa-plus-circle"></i> Crear Nueva Oferta
+            </a>
+        </div>
+        <div class="card-body p-0">
+            {% if candidaturas %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Oferta</th>
+                            <th>Empresa</th>
+                            <th>Candidato</th>
+                            <th>Estado Actual</th>
+                            <th>Última Actualización</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in candidaturas %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'job_offer_detail' offer_id=c.offer.id %}" class="text-primary">
+                                        <strong>{{ c.offer.title }}</strong>
+                                    </a>
+                                </td>
+                                <td>{{ c.offer.company_name }}</td>
+                                <td>
+                                    {# Enlazar al perfil del candidato si existe o solo mostrar nombre de usuario #}
+                                    <span class="text-info">{{ c.user.get_full_name|default:c.user.username }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge 
+                                        {% if c.estado == 'pendiente' %}bg-secondary
+                                        {% elif c.estado == 'revisado' %}bg-info
+                                        {% elif c.estado == 'entrevista' %}bg-primary
+                                        {% elif c.estado == 'rechazado' %}bg-danger
+                                        {% elif c.estado == 'contratado' %}bg-success
+                                        {% else %}bg-light text-dark{% endif %}">
+                                        {{ c.get_estado_display }}
+                                    </span>
+                                </td>
+                                <td>{{ c.updated_at|date:"d M Y H:i" }}</td>
+                                <td>
+                                    <a href="{% url 'cambiar_estado_candidatura' candidature_id=c.id %}" class="btn btn-sm btn-outline-primary me-2" title="Cambiar estado y enviar mensaje">
+                                        <i class="fas fa-edit"></i> Gestionar
+                                    </a>
+                                    {# Opcional: Enlace directo a las candidaturas de esa oferta (si la vista 'offer_applications' es útil aquí) #}
+                                    <a href="{% url 'offer_applications' offer_id=c.offer.id %}" class="btn btn-sm btn-outline-info" title="Ver todas las candidaturas de esta oferta">
+                                        <i class="fas fa-users"></i> Candidaturas de la Oferta
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <div class="alert alert-info m-3" role="alert">
+                    No tienes candidaturas para gestionar en tus ofertas.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
