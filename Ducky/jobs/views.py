@@ -46,8 +46,8 @@ class CandidateDashboardView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Puedes añadir más contexto si lo necesitas, por ejemplo, ofertas destacadas.
-        context['is_headhunter'] = self.request.user.is_authenticated and \
-                                   self.request.user.groups.filter(name='headhunter').exists()
+        context['is_candidate'] = self.request.user.is_authenticated and \
+                                   self.request.user.groups.filter(name='candidate').exists()
         return context
 
 # --- Vistas para la Gestión de Ofertas (Headhunter) ---

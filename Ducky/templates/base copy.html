@@ -1,7 +1,5 @@
-
 {# templates/base.html #}
-{% load static %}
-{% load user_tags %} {# ¡Añade esta línea para cargar tus tags personalizados! #}
+{% load static %} {# Asegúrate de cargar static files si usas tus propios CSS/JS #}
 
 <!DOCTYPE html>
 <html lang="es">
@@ -15,9 +13,10 @@
     {# Font Awesome CDN para iconos #}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+    {# Bloque para CSS/JS adicional específico de cada página #}
     {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-light d-flex flex-column min-vh-100">
+<body class="bg-light d-flex flex-column min-vh-100"> {# min-vh-100 para que el footer se quede abajo #}
 
     {# Barra de Navegación #}
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
@@ -33,23 +32,21 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'job_offer_list' %}">Ofertas</a>
                     </li>
-                    {% if user.is_authenticated %}
-                        {# Navegación para Candidatos usando el templatetag #}
-                        {% if user|is_in_group:'candidate' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'candidate_dashboard' %}">Mis Candidaturas</a>
-                            </li>
-                        {% endif %}
-                        {# Navegación para Headhunters usando el templatetag #}
-                        {% if user|is_in_group:'headhunter' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'headhunter_dashboard' %}">Dashboard Headhunter</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'agenda' %}">Agenda</a>
-                            </li>
-                        {% endif %}
-                    {% endif %}
+                    {# Navegación para Candidatos #}
+                
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'candidate_dashboard' %}">Mis Candidaturas</a>
+                    </li>
+                
+                    {# Navegación para Headhunters #}
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'headhunter_dashboard' %}">Dashboard Headhunter</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'agenda' %}">Agenda</a>
+                    </li>
+                    
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
@@ -58,7 +55,8 @@
                                 <i class="fas fa-user-circle"></i> Hola, {{ user.get_full_name|default:user.username }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="{% url 'home' %}">Mi Perfil</a></li>
+                                {# Puedes añadir un enlace al perfil del usuario aquí si tienes uno #}
+                                <li><a class="dropdown-item" href="{% url 'home' %}">Mi Perfil</a></li> {# Asumiendo 'profile_view' #}
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a></li>
                             </ul>
@@ -68,7 +66,7 @@
                             <a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-outline-light ms-2" href="{% url 'register' %}">Registrarse</a>
+                            <a class="btn btn-outline-light ms-2" href="{% url 'register' %}">Registrarse</a> {# Asumiendo 'register' #}
                         </li>
                     {% endif %}
                 </ul>
@@ -76,7 +74,7 @@
         </div>
     </nav>
 
-    {# Mensajes de Django (alerts) #}
+    {# Mensajes de Django (alerts) - Colocado aquí para que aparezcan en todas las páginas #}
     <div class="container mt-3">
         {% if messages %}
             {% for message in messages %}
@@ -89,8 +87,9 @@
     </div>
 
     {# Contenido específico de cada página #}
-    <main class="flex-grow-1">
+    <main class="flex-grow-1"> {# flex-grow-1 para que el main ocupe el espacio restante y empuje el footer #}
         {% block content %}
+            {# Contenido por defecto si un template no define este bloque #}
         {% endblock %}
     </main>
 
@@ -103,6 +102,7 @@
 
     {# Bootstrap JavaScript CDN #}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    {# Bloque para JS adicional al final del body #}
     {% block extra_js %}{% endblock %}
 </body>
 </html>
