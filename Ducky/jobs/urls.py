@@ -8,7 +8,7 @@ urlpatterns = [
     path('oferta/<int:offer_id>/postular/', views.apply_to_offer, name='apply_to_offer'),
     path('oferta/crear/', views.CreateOfferView.as_view(), name='create_offer'), # Solo headhunters
     path('oferta/<int:offer_id>/editar/', views.EditOfferView.as_view(), name='edit_offer'),
-    path('candidato/dashboard/', views.candidato_dashboard, name='candidate_dashboard'),
+    path('candidato/dashboard/', views.candidate_dashboard, name='candidate_dashboard'),
 
     # URLs para el dashboard y gestión de headhunters
     path('headhunter/', views.HeadhunterDashboardView.as_view(), name='headhunter_dashboard'),

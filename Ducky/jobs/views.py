@@ -22,34 +22,7 @@ from .decorators import headhunter_required, HeadhunterRequiredMixin
 
 # --- Vistas del Dashboard del Headhunter y Gestión de Ofertas ---
 
-# Usamos HeadhunterRequiredMixin directamente en lugar del decorador para CBV
-# --- Vistas del Dashboard del Candidato ---
-
-class CandidateDashboardView(LoginRequiredMixin, ListView):
-    """
-    Muestra el panel de control del candidato con sus postulaciones.
-    Solo accesible para usuarios logueados que NO son headhunters.
-    """
-    model = Candidatura
-    template_name = 'jobs/candidate_dashboard.html'
-    context_object_name = 'Mis Candidaturas'
-
-    def get_queryset(self):
-        # Filtra las candidaturas del usuario logueado
-        # Asegúrate de que el usuario no sea un headhunter para acceder a este dashboard
-        if self.request.user.groups.filter(name='headhunter').exists():
-            messages.warning(self.request, 'Los headhunters tienen su propio panel de control.')
-            return Candidatura.objects.none() # Devuelve un queryset vacío si es headhunter
-        
-        return Candidatura.objects.filter(user=self.request.user).order_by('-fecha_aplicacion')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Puedes añadir más contexto si lo necesitas, por ejemplo, ofertas destacadas.
-        context['is_candidate'] = self.request.user.is_authenticated and \
-                                   self.request.user.groups.filter(name='candidate').exists()
-        return context
-
+# Usamos HeadhunterRequiredMixin directamente en lugar del decorador para CBV ---
 # --- Vistas para la Gestión de Ofertas (Headhunter) ---
 class HeadhunterDashboardView(HeadhunterRequiredMixin, ListView):
     """
@@ -160,10 +133,10 @@ class JobOfferDetailView(DetailView):
 
 # --- Vistas de Postulación ---
 @login_required
-def candidato_dashboard(request):
+def candidate_dashboard(request):
     candidaturas = Candidatura.objects.filter(user=request.user).select_related('offer')
 
-    return render(request, 'jobs/candidato_dashboard.html', {
+    return render(request, 'jobs/candidate_dashboard.html', {
         'candidaturas': candidaturas,
     })
 
@@ -296,7 +269,7 @@ def crear_accion_ajax(request):
     """
     Crea una nueva acción de agenda vía AJAX.
     """
-    # Pasar el usuario al formulario para que los querysets de oferta/candidatura se filtren correctamente
+    # Pasar el usuario al formulario para que los querysets de oferta/candidatura se filtren correctamente ---
     form = AgendaAccionForm(request.POST, user=request.user) 
     if form.is_valid():
         accion = form.save(commit=False)
@@ -331,7 +304,7 @@ def editar_accion_ajax(request, accion_id):
         if form.is_valid():
             # Validar que la oferta seleccionada (si existe) pertenezca al headhunter
             if form.cleaned_data.get('oferta') and not JobOffer.objects.filter(id=form.cleaned_data['oferta'].id, created_by=request.user).exists():
-                 return JsonResponse({'status': 'error', 'errors': {'oferta': ['La oferta seleccionada no te pertenece.']}}, status=403)
+                return JsonResponse({'status': 'error', 'errors': {'oferta': ['La oferta seleccionada no te pertenece.']}}, status=403)
             
             # Validar que la candidatura seleccionada (si existe) pertenezca a una oferta del headhunter
             if form.cleaned_data.get('candidatura') and not Candidatura.objects.filter(id=form.cleaned_data['candidatura'].id, offer__created_by=request.user).exists():
